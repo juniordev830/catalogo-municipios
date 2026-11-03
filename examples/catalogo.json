@@ -1,0 +1,21 @@
+{
+  "fonte": "Fixture sintetica para desenvolvimento; nao e extracao do IBGE",
+  "atualizado_em": "2026-11-03",
+  "municipios": [
+    {
+      "id": 1,
+      "nome": "Natal",
+      "uf": "RN"
+    },
+    {
+      "id": 2,
+      "nome": "Sao Goncalo do Amarante",
+      "uf": "RN"
+    },
+    {
+      "id": 3,
+      "nome": "Recife",
+      "uf": "PE"
+    }
+  ]
+}

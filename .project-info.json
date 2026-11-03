@@ -1,0 +1,20 @@
+{
+  "name": "catalogo-municipios",
+  "title": "Catálogo de Municípios",
+  "description": "Consulta de municípios e hierarquias territoriais com busca e cache.",
+  "primary_language": "PHP",
+  "proposed_technologies": "PHP, Symfony e SQLite",
+  "status": "initial-core",
+  "github_created": true,
+  "application_implemented": true,
+  "planned_features": [
+    "Consultar dados do IBGE",
+    "Buscar municípios por nome e UF",
+    "Manter cache com data de atualização"
+  ],
+  "implemented_technologies": [
+    "PHP",
+    "Biblioteca padrão"
+  ],
+  "validation": "Consulte GitHub Actions"
+}
