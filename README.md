@@ -1,39 +1,37 @@
 # Catálogo de Municípios
 
-Consulta de municípios e hierarquias territoriais com busca e cache.
+CLI em **PHP 8.3** para consultar um catálogo **local** de municípios por UF e parte do nome. Não exige extensões `intl` ou `mbstring`.
 
-## Implementado na primeira versão
+## Funcionalidades
 
-**PHP — núcleo executável de domínio.** Filtra um catálogo local por UF e parte do nome, valida IDs únicos e inclui a origem e a data do arquivo na resposta.
+- Busca insensível a maiúsculas/minúsculas e aos acentos portugueses mais comuns: `Sao`, `São` e `SÃO` podem localizar `São Gonçalo`.
+- Filtra por UF de duas letras e valida IDs únicos e todos os registros, mesmo quando a pesquisa tem paginação.
+- Ordena pelo nome normalizado e ID para resultados estáveis.
+- `--pagina LIMITE DESLOCAMENTO`: retorna `total`, `limite`, `deslocamento` e até 100 itens por página; o índice inicial é zero. Sem a opção, preserva a estrutura anterior.
+- Conserva metadados de fonte e data de atualização do próprio arquivo, sem inventar origem ou atualização automática.
 
-## Como executar
-
-Instale PHP 8.3 CLI. Não há dependências Composer. Os comandos abaixo partem da raiz do repositório.
+## Uso
 
 ```sh
-php main.php examples/catalogo.json RN Natal
+php main.php examples/catalogo.json RN Sao
+php main.php examples/catalogo.json RN 'Gonçalo'
+php main.php examples/catalogo.json RN Sao --pagina 20 0
+php main.php --self-test
 ```
+
+O exemplo de catálogo usa IDs **sintéticos** e não é uma extração oficial do IBGE.
 
 ## Testes
 
 ```sh
+php -l main.php
 php main.php --self-test
 ```
 
-Os testes cobrem invariantes e entradas inválidas. A preparação local não dispõe deste runtime; o workflow em `.github/workflows/ci.yml` executa a validação no GitHub Actions. O resultado de cada execução está na aba Actions, associado ao commit.
+O GitHub Actions testa validações, duplicidade de IDs, limites de paginação e buscas com e sem acentos.
 
-## Organização e limites
+## Limitações
 
-Código e exemplos: `main.php e examples/catalogo.json`. Os dados de exemplo são fictícios. As funções de domínio são separadas da leitura de argumentos no mesmo arquivo para manter a primeira versão pequena e revisável.
+A normalização cobre os diacríticos portugueses mais frequentes, mas não constitui uma implementação Unicode completa. O arquivo JSON é limitado a 2 MB no modo CLI. Não acessa API do IBGE nem sincroniza/cadastra novas cidades. A data de atualização é a declarada no arquivo carregado, não uma garantia de atualidade da fonte.
 
-O exemplo usa IDs sintéticos e não representa uma base oficial. Não há consulta ao IBGE, SQLite ou cache conectado ainda. Busca é insensível a maiúsculas ASCII; normalização de acentos é uma evolução.
-
-A proposta completa de evolução está em `ARQUITETURA.md`. As tecnologias propostas nessa arquitetura não devem ser interpretadas como dependências já implementadas.
-
-## Próximas entregas
-
-- [ ] Consultar dados do IBGE — ampliar o núcleo atual até o fluxo completo.
-- [ ] Buscar municípios por nome e UF — ampliar o núcleo atual até o fluxo completo.
-- [ ] Manter cache com data de atualização — ampliar o núcleo atual até o fluxo completo.
-
-Licença: ainda não definida.
+Licença ainda não definida.
