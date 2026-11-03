@@ -12,3 +12,7 @@ jobs:
           persist-credentials: false
       - name: Analisar sintaxe e testar
         run: docker run --rm -v "$PWD:/work" -w /work php:8.3-cli sh -c 'php -l main.php && php main.php --self-test'
+      - name: Validar busca real com paginação
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work php:8.3-cli php main.php examples/catalogo.json RN goncalo --pagina 10 0 | grep -F '"total": 1'
+          docker run --rm -v "$PWD:/work" -w /work php:8.3-cli php main.php examples/catalogo.json RN Sao | grep -F 'Sao Goncalo do Amarante'
