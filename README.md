@@ -1,39 +1,65 @@
 # Catálogo de Municípios
 
-Consulta de municípios e hierarquias territoriais com busca e cache.
+Ferramenta offline em PHP para consultar registros municipais com filtros, paginação, estatísticas, raio geográfico e exportação CSV/GeoJSON. Não consulta APIs, não modifica dados de origem e **não apresenta o conjunto de exemplo como base oficial do IBGE**.
 
-## Implementado na primeira versão
+## Requisitos
 
-**PHP — núcleo executável de domínio.** Filtra um catálogo local por UF e parte do nome, valida IDs únicos e inclui a origem e a data do arquivo na resposta.
+PHP 8.3 ou superior, sem Composer e sem dependências externas.
 
-## Como executar
+## Compatibilidade
 
-Instale PHP 8.3 CLI. Não há dependências Composer. Os comandos abaixo partem da raiz do repositório.
+A CLI original permanece inalterada:
 
 ```sh
 php main.php examples/catalogo.json RN Natal
-```
-
-## Testes
-
-```sh
 php main.php --self-test
 ```
 
-Os testes cobrem invariantes e entradas inválidas. A preparação local não dispõe deste runtime; o workflow em `.github/workflows/ci.yml` executa a validação no GitHub Actions. O resultado de cada execução está na aba Actions, associado ao commit.
+A nova CLI aceita filtros opcionais:
 
-## Organização e limites
+```sh
+php catalog.php examples/catalogo.json --uf=RN --termo=natal
+php catalog.php examples/catalogo.json --sort=nome --order=desc --limit=10 --offset=0
+php catalog.php examples/catalogo.json --min-pop=100000 --max-pop=1000000
+php catalog.php examples/catalogo.json --latitude=-5.79 --longitude=-35.21 --raio-km=30 --sort=distancia
+php catalog.php examples/catalogo.json --format=stats
+php catalog.php examples/catalogo.json --format=csv
+php catalog.php examples/catalogo.json --format=geojson
+```
 
-Código e exemplos: `main.php e examples/catalogo.json`. Os dados de exemplo são fictícios. As funções de domínio são separadas da leitura de argumentos no mesmo arquivo para manter a primeira versão pequena e revisável.
+O resultado vai para stdout. Redirecione para um arquivo somente se desejar salvar: `php catalog.php examples/catalogo.json --format=csv > municipios.csv`.
 
-O exemplo usa IDs sintéticos e não representa uma base oficial. Não há consulta ao IBGE, SQLite ou cache conectado ainda. Busca é insensível a maiúsculas ASCII; normalização de acentos é uma evolução.
+## Estrutura do JSON
 
-A proposta completa de evolução está em `ARQUITETURA.md`. As tecnologias propostas nessa arquitetura não devem ser interpretadas como dependências já implementadas.
+O arquivo deve conter `fonte` (identificação textual), `atualizado_em` (data real em AAAA-MM-DD) e `municipios` (lista). Cada município precisa de `id` (inteiro positivo único), `nome` (texto) e `uf` (uma das 27 siglas brasileiras).
 
-## Próximas entregas
+São opcionais: `populacao` (inteiro não negativo), `latitude` e `longitude` (sempre juntas), e `codigo_ibge` (string de sete dígitos). Valores ausentes permanecem `null`; o aplicativo não inventa dados. Dados reais devem trazer a fonte, a data de referência e condições de uso.
 
-- [ ] Consultar dados do IBGE — ampliar o núcleo atual até o fluxo completo.
-- [ ] Buscar municípios por nome e UF — ampliar o núcleo atual até o fluxo completo.
-- [ ] Manter cache com data de atualização — ampliar o núcleo atual até o fluxo completo.
+## Funcionalidades
 
-Licença: ainda não definida.
+- Busca por nome sem diferenciar maiúsculas e acentos portugueses.
+- Filtros por UF, população mínima e máxima.
+- Ordenação por nome, UF, ID, população ou distância, com paginação estável.
+- Busca em raio por fórmula de Haversine (distância aproximada em quilômetros), somente para registros com coordenadas.
+- Estatísticas sobre cobertura de população, coordenadas e quantidades por UF.
+- Exportação CSV com neutralização de células que poderiam ser interpretadas como fórmulas.
+- Exportação GeoJSON com pontos na ordem correta longitude/latitude, omitindo registros sem coordenadas.
+
+A API PHP expõe `Municipios\Catalog::validate()`, `search()`, `statistics()`, `csv()` e `geojson()`.
+
+## Testes e CI
+
+```sh
+php -l main.php
+php -l catalog.php
+php -l src/Catalog.php
+php -l tests/test_catalog.php
+php main.php --self-test
+php tests/test_catalog.php
+```
+
+O GitHub Actions executa análise de sintaxe, os testes originais e 23 novos cenários. A suíte cobre validações, filtros, ordenação, distâncias, exportação, neutralização de fórmulas e a CLI.
+
+## Limitações
+
+Não é uma base geográfica oficial, não faz geocodificação, não fornece fronteiras municipais e não implementa consulta por polígono. O cálculo de distância é aproximado e não representa distância rodoviária. O limite por consulta é 1000 registros, com no máximo 100000 registros carregados no catálogo. Não há dependência de serviços externos.
