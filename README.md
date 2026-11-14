@@ -26,7 +26,7 @@ Os testes cobrem invariantes e entradas inválidas. A preparação local não di
 
 Código e exemplos: `main.php e examples/catalogo.json`. Os dados de exemplo são fictícios. As funções de domínio são separadas da leitura de argumentos no mesmo arquivo para manter a primeira versão pequena e revisável.
 
-O exemplo usa IDs sintéticos e não representa uma base oficial. Não há consulta ao IBGE, SQLite ou cache conectado ainda. Busca é insensível a maiúsculas ASCII; normalização de acentos é uma evolução.
+O exemplo usa IDs sintéticos e não representa uma base oficial. Não há consulta ao IBGE, SQLite ou cache conectado ainda. A busca ignora maiúsculas e os acentos comuns em português (por exemplo, `sao goncalo` encontra `São Gonçalo`).
 
 A proposta completa de evolução está em `ARQUITETURA.md`. As tecnologias propostas nessa arquitetura não devem ser interpretadas como dependências já implementadas.
 
