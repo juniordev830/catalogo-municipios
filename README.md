@@ -45,6 +45,8 @@ São opcionais: `populacao` (inteiro não negativo), `latitude` e `longitude` (s
 - Exportação CSV com neutralização de células que poderiam ser interpretadas como fórmulas.
 - Exportação GeoJSON com pontos na ordem correta longitude/latitude, omitindo registros sem coordenadas.
 
+O exemplo usa IDs sintéticos e não representa uma base oficial. Não há consulta ao IBGE, SQLite ou cache conectado ainda. A busca ignora maiúsculas e os acentos comuns em português (por exemplo, `sao goncalo` encontra `São Gonçalo`).
+
 A API PHP expõe `Municipios\Catalog::validate()`, `search()`, `statistics()`, `csv()` e `geojson()`.
 
 ## Testes e CI
@@ -63,3 +65,9 @@ O GitHub Actions executa análise de sintaxe, os testes originais e 23 novos cen
 ## Limitações
 
 Não é uma base geográfica oficial, não faz geocodificação, não fornece fronteiras municipais e não implementa consulta por polígono. O cálculo de distância é aproximado e não representa distância rodoviária. O limite por consulta é 1000 registros, com no máximo 100000 registros carregados no catálogo. Não há dependência de serviços externos.
+
+Licença: ainda não definida.
+
+## Roteiro de qualidade
+
+Consulte o [guia de validação e manutenção](docs/GUIA_DE_VALIDACAO.md) para reproduzir testes, entender as limitações e revisar mudanças com segurança.
