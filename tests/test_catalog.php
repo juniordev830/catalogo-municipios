@@ -179,6 +179,16 @@ $tests = [
         invalid(fn () => Catalog::search($catalog, ['order' => 'random']), 'order');
         invalid(fn () => Catalog::search($catalog, ['min_pop' => 10, 'max_pop' => 5]), 'min_pop');
     },
+    'geojson features expose stable municipality ids' => function (): void {
+        $search = Catalog::search(Catalog::validate(sampleCatalog()));
+        $geo = Catalog::geojson($search);
+        check($geo['type'] === 'FeatureCollection', 'GeoJSON collection');
+        check($geo['features'] !== [], 'GeoJSON features expected');
+        foreach ($geo['features'] as $feature) {
+            equal($feature['properties']['id'], $feature['id'], 'stable feature identifier');
+            equal('Point', $feature['geometry']['type'], 'GeoJSON point');
+        }
+    },
     'geofilter selects nearby cities only' => function (): void {
         $result = Catalog::search(Catalog::validate(sampleCatalog()), [
             'latitude' => -5.7945, 'longitude' => -35.211, 'raio_km' => 20,
