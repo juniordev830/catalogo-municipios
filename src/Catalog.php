@@ -265,6 +265,7 @@ final class Catalog
             }
             $features[] = [
                 'type' => 'Feature',
+                'id' => $city['id'],
                 'geometry' => [
                     'type' => 'Point',
                     'coordinates' => [$city['longitude'], $city['latitude']],
