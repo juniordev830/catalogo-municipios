@@ -130,6 +130,13 @@ $tests = [
         $input['municipios'][0]['codigo_ibge'] = '123';
         invalid(fn () => Catalog::validate($input), 'codigo_ibge');
     },
+    'rejects duplicate IBGE codes without confusing optional nulls' => function (): void {
+        $input = sampleCatalog();
+        $input['municipios'][2]['codigo_ibge'] = '2408102';
+        invalid(fn () => Catalog::validate($input), 'codigo_ibge duplicado');
+        $input['municipios'][2]['codigo_ibge'] = null;
+        equal(4, count(Catalog::validate($input)['municipios']));
+    },
     'searches with accent and case folding' => function (): void {
         $result = Catalog::search(Catalog::validate(sampleCatalog()), ['termo' => 'sao gonc']);
         equal(1, $result['total']);
