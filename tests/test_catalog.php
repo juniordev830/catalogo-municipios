@@ -130,6 +130,13 @@ $tests = [
         $input['municipios'][0]['codigo_ibge'] = '123';
         invalid(fn () => Catalog::validate($input), 'codigo_ibge');
     },
+    'rejects duplicate IBGE codes without confusing optional nulls' => function (): void {
+        $input = sampleCatalog();
+        $input['municipios'][2]['codigo_ibge'] = '2408102';
+        invalid(fn () => Catalog::validate($input), 'codigo_ibge duplicado');
+        $input['municipios'][2]['codigo_ibge'] = null;
+        equal(4, count(Catalog::validate($input)['municipios']));
+    },
     'searches with accent and case folding' => function (): void {
         $result = Catalog::search(Catalog::validate(sampleCatalog()), ['termo' => 'sao gonc']);
         equal(1, $result['total']);
@@ -171,6 +178,16 @@ $tests = [
         invalid(fn () => Catalog::search($catalog, ['sort' => 'sql']), 'sort');
         invalid(fn () => Catalog::search($catalog, ['order' => 'random']), 'order');
         invalid(fn () => Catalog::search($catalog, ['min_pop' => 10, 'max_pop' => 5]), 'min_pop');
+    },
+    'geojson features expose stable municipality ids' => function (): void {
+        $search = Catalog::search(Catalog::validate(sampleCatalog()));
+        $geo = Catalog::geojson($search);
+        check($geo['type'] === 'FeatureCollection', 'GeoJSON collection');
+        check($geo['features'] !== [], 'GeoJSON features expected');
+        foreach ($geo['features'] as $feature) {
+            equal($feature['properties']['id'], $feature['id'], 'stable feature identifier');
+            equal('Point', $feature['geometry']['type'], 'GeoJSON point');
+        }
     },
     'geofilter selects nearby cities only' => function (): void {
         $result = Catalog::search(Catalog::validate(sampleCatalog()), [

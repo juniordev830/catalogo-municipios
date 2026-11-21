@@ -71,3 +71,5 @@ Licença: ainda não definida.
 ## Roteiro de qualidade
 
 Consulte o [guia de validação e manutenção](docs/GUIA_DE_VALIDACAO.md) para reproduzir testes, entender as limitações e revisar mudanças com segurança.
+
+O campo opcional `codigo_ibge`, quando presente, é único dentro do catálogo para impedir que duas cidades compartilhem o mesmo identificador oficial. Exportações GeoJSON agora incluem `Feature.id` igual ao ID do município, facilitando a seleção e o rastreamento de pontos em visualizadores GIS.
