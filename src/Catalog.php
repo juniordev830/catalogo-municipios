@@ -30,6 +30,7 @@ final class Catalog
             throw new \InvalidArgumentException('municipios deve ser uma lista de até 100000 registros');
         }
         $seen = [];
+        $seenIbge = [];
         $validated = [];
         foreach ($cities as $position => $city) {
             if (!is_array($city) || array_is_list($city)) {
@@ -54,6 +55,12 @@ final class Catalog
             $ibge = $city['codigo_ibge'] ?? null;
             if ($ibge !== null && (!is_string($ibge) || !preg_match('/^\d{7}$/D', $ibge))) {
                 throw new \InvalidArgumentException("municipios[$position].codigo_ibge deve ter 7 dígitos");
+            }
+            if ($ibge !== null) {
+                if (isset($seenIbge[$ibge])) {
+                    throw new \InvalidArgumentException("codigo_ibge duplicado: $ibge");
+                }
+                $seenIbge[$ibge] = true;
             }
             $validated[] = [
                 'id' => $id,
