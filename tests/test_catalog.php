@@ -264,6 +264,18 @@ $tests = [
             unlink($file);
         }
     },
+    'cli rejects oversized catalog before decoding' => function (): void {
+        $file = tempnam(sys_get_temp_dir(), 'catalog');
+        try {
+            file_put_contents($file, str_repeat('x', 5_000_001));
+            [$status, $output, $error] = executeCli([$file]);
+            equal(2, $status);
+            equal('', $output);
+            check(str_contains($error, '5 MB'), 'Limite não apresentado na CLI');
+        } finally {
+            unlink($file);
+        }
+    },
     'cli reports errors without tracebacks' => function (): void {
         $file = tempnam(sys_get_temp_dir(), 'catalog');
         try {
