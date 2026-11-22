@@ -26,12 +26,18 @@ function catalogCli(array $arguments): int
         'max-pop' => 'max_pop', 'latitude' => 'latitude',
         'longitude' => 'longitude', 'raio-km' => 'raio_km',
     ];
+    $seenOptions = [];
     foreach (array_slice($arguments, 2) as $argument) {
         if (!str_starts_with($argument, '--') || !str_contains($argument, '=')) {
             fwrite(STDERR, "Opção inválida: $argument\n");
             return 2;
         }
         [$name, $value] = explode('=', substr($argument, 2), 2);
+        if (isset($seenOptions[$name])) {
+            fwrite(STDERR, "Opção repetida: $name\n");
+            return 2;
+        }
+        $seenOptions[$name] = true;
         if ($name === 'format') {
             $format = $value;
         } elseif (isset($names[$name])) {
