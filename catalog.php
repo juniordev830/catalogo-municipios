@@ -26,12 +26,18 @@ function catalogCli(array $arguments): int
         'max-pop' => 'max_pop', 'latitude' => 'latitude',
         'longitude' => 'longitude', 'raio-km' => 'raio_km',
     ];
+    $seenOptions = [];
     foreach (array_slice($arguments, 2) as $argument) {
         if (!str_starts_with($argument, '--') || !str_contains($argument, '=')) {
             fwrite(STDERR, "Opção inválida: $argument\n");
             return 2;
         }
         [$name, $value] = explode('=', substr($argument, 2), 2);
+        if (isset($seenOptions[$name])) {
+            fwrite(STDERR, "Opção repetida: $name\n");
+            return 2;
+        }
+        $seenOptions[$name] = true;
         if ($name === 'format') {
             $format = $value;
         } elseif (isset($names[$name])) {
@@ -65,9 +71,12 @@ function catalogCli(array $arguments): int
         if (!is_file($file) || !is_readable($file)) {
             throw new RuntimeException('Arquivo não encontrado ou ilegível');
         }
-        $contents = file_get_contents($file);
+        $contents = file_get_contents($file, false, null, 0, 5_000_001);
         if ($contents === false) {
             throw new RuntimeException('Falha ao ler catálogo');
+        }
+        if (strlen($contents) > 5_000_000) {
+            throw new InvalidArgumentException('Catálogo JSON excede 5 MB');
         }
         $input = json_decode($contents, true, 64, JSON_THROW_ON_ERROR);
         if (!is_array($input)) {
