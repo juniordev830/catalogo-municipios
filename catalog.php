@@ -65,9 +65,12 @@ function catalogCli(array $arguments): int
         if (!is_file($file) || !is_readable($file)) {
             throw new RuntimeException('Arquivo não encontrado ou ilegível');
         }
-        $contents = file_get_contents($file);
+        $contents = file_get_contents($file, false, null, 0, 5_000_001);
         if ($contents === false) {
             throw new RuntimeException('Falha ao ler catálogo');
+        }
+        if (strlen($contents) > 5_000_000) {
+            throw new InvalidArgumentException('Catálogo JSON excede 5 MB');
         }
         $input = json_decode($contents, true, 64, JSON_THROW_ON_ERROR);
         if (!is_array($input)) {
