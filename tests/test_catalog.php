@@ -276,6 +276,20 @@ $tests = [
             unlink($file);
         }
     },
+    'cli rejects conflicting duplicate filter options' => function (): void {
+        $file = tempnam(sys_get_temp_dir(), 'catalog');
+        try {
+            file_put_contents($file, json_encode(sampleCatalog(), JSON_THROW_ON_ERROR));
+            foreach ([['--uf=RN', '--uf=PE'], ['--format=json', '--format=csv']] as $options) {
+                [$status, $output, $error] = executeCli([$file, ...$options]);
+                equal(2, $status);
+                equal('', $output);
+                check(str_contains($error, 'repetida'), 'Opção repetida não sinalizada');
+            }
+        } finally {
+            unlink($file);
+        }
+    },
     'cli reports errors without tracebacks' => function (): void {
         $file = tempnam(sys_get_temp_dir(), 'catalog');
         try {
