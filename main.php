@@ -31,6 +31,9 @@ try {
     }
     if (count($argv)!==4) throw new InvalidArgumentException('Uso: php main.php catalogo.json UF TERMO');
     $text=file_get_contents($argv[1]); if($text===false) throw new RuntimeException('Falha de leitura');
+    if (str_starts_with($text, "\xEF\xBB\xBF")) {
+        $text = substr($text, 3);
+    }
     $data=json_decode($text,true,128,JSON_THROW_ON_ERROR);
     if (!is_array($data) || !isset($data['municipios'],$data['fonte'],$data['atualizado_em'])) throw new InvalidArgumentException('Catálogo sem metadados');
     echo json_encode(['fonte'=>$data['fonte'],'atualizado_em'=>$data['atualizado_em'],'resultados'=>searchCities($data['municipios'],$argv[3],$argv[2])],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)."\n";

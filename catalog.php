@@ -69,6 +69,9 @@ function catalogCli(array $arguments): int
         if ($contents === false) {
             throw new RuntimeException('Falha ao ler catálogo');
         }
+        if (str_starts_with($contents, "\xEF\xBB\xBF")) {
+            $contents = substr($contents, 3);
+        }
         $input = json_decode($contents, true, 64, JSON_THROW_ON_ERROR);
         if (!is_array($input)) {
             throw new InvalidArgumentException('JSON deve conter um objeto');
