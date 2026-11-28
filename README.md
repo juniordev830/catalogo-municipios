@@ -1,5 +1,7 @@
 # Catálogo de Municípios
 
+**Navegação** · [Requisitos](#requisitos) · [Compatibilidade](#compatibilidade) · [Estrutura do JSON](#estrutura-do-json) · [Código e estudo](docs/ENGENHARIA_REVERSA.md)
+
 Ferramenta offline em PHP para consultar registros municipais com filtros, paginação, estatísticas, raio geográfico e exportação CSV/GeoJSON. Não consulta APIs, não modifica dados de origem e **não apresenta o conjunto de exemplo como base oficial do IBGE**.
 
 ## Requisitos
@@ -73,3 +75,9 @@ Licença: ainda não definida.
 Consulte o [guia de validação e manutenção](docs/GUIA_DE_VALIDACAO.md) para reproduzir testes, entender as limitações e revisar mudanças com segurança.
 
 O campo opcional `codigo_ibge`, quando presente, é único dentro do catálogo para impedir que duas cidades compartilhem o mesmo identificador oficial. Exportações GeoJSON agora incluem `Feature.id` igual ao ID do município, facilitando a seleção e o rastreamento de pontos em visualizadores GIS.
+
+## Código e roteiro de estudo
+
+Como testaria uma consulta por raio próximo do limite do filtro? O [guia de engenharia reversa](docs/ENGENHARIA_REVERSA.md) reúne o mapa dos módulos e uma pergunta técnica baseada no projeto.
+
+Mantido por [João Junior](https://github.com/juniordev830).
